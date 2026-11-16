@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 const html = await readFile('index.html','utf8');
 const lower = html.toLowerCase();
 
-test('retains Netlify build structure and responsive local workspace features',()=>{
+test('retains responsive local workspace features and build structure',()=>{
   assert.match(html,/id="sidenav"/);
   assert.match(html,/localStorage/);
   assert.match(html,/exportAll/);
@@ -22,7 +22,8 @@ test('Analyzer & Bagging contains the four requested modules',()=>{
 test('uses the latest user-supplied Apps Script URLs and SharePoint link',()=>{
   assert.ok(html.includes('https://script.google.com/macros/s/AKfycbwDMo8rk82VoeBcYDdlsQbPsTPR_lmfN20sMS-8MlYY7C__D9A0U1W6WsBAwh3KuqryKA/exec'));
   assert.ok(html.includes('https://script.google.com/macros/s/AKfycbwYB2VgYWttU-LFhg9tiqDexLqFG3ZuYbPjNOrwpv5q-T20azxna0JuTd1ycVhRl15h/exec'));
-  assert.ok(html.includes('https://chandraasripetrochemical-my.sharepoint.com/:x:/g/personal/afif_allam_capcx_com/IQAO0dSQQAN8Q5UHHqyQfoK7ATZu5QV-824MVvByf0tNGlU?e=48cbAR'));
+  assert.ok(html.includes('https://chandraasripetrochemical-my.sharepoint.com/:x:/g/personal/dudi_hermansyah_capcx_com/IQDaqUy_LXWlQLuiYSV09mZUAVvbldE39NjztWtNvAexYls?e=kL50Oo'));
+  assert.ok(!html.includes('https://chandraasripetrochemical-my.sharepoint.com/:x:/g/personal/afif_allam_capcx_com/IQAO0dSQQAN8Q5UHHqyQfoK7ATZu5QV-824MVvByf0tNGlU?e=48cbAR'));
 });
 test('PM Compliance offers embedded SharePoint and open-in-new-tab fallback',()=>{
   assert.match(html,/function compliancePage\(/);
@@ -83,10 +84,17 @@ test('README identifies V7 and separates team workspaces from shared documents',
 test('package and build metadata are aligned with project version V7',async()=>{
   const pkg = JSON.parse(await readFile('package.json','utf8'));
   const build = await readFile('build.mjs','utf8');
-  assert.equal(pkg.version,'7.1.0');
-  assert.match(build,/PM CENTRAL V7.1 build complete/);
+  assert.equal(pkg.version,'7.2.0');
+  assert.match(build,/PM CENTRAL V7.2 build complete/);
 });
 
+test('Cloudflare deployment branding replaces stale Netlify labels',async()=>{
+  assert.match(html,/Cloudflare Workers/);
+  assert.doesNotMatch(html,/Netlify workspace|Netlify \+ GitHub/);
+  const readme = await readFile('README.md','utf8');
+  assert.match(readme,/Cloudflare Pages|Cloudflare Workers/);
+  assert.match(readme,/pm-central-enterprise\.afifhaidara\.workers\.dev/);
+});
 test('MPE2 creator branding is visible in the app shell and documented in README',async()=>{
   assert.match(html,/MPE2 TEAM/);
   assert.match(html,/Developed &amp; Designed by Masapep \/ BWK/);
@@ -95,4 +103,5 @@ test('MPE2 creator branding is visible in the app shell and documented in README
   const readme = await readFile('README.md','utf8');
   assert.match(readme,/Developer: Masapep \/ BWK/);
   assert.match(readme,/Team: MPE2/);
+  assert.match(readme,/Release: V7\.2/);
 });
